@@ -30,7 +30,7 @@ class VarNode implements Expression {
     }
 
     public String show() {
-        return "\t<VarNode> " + string; 
+        return "\t<VarNode> " + string + "\n"; 
     }
 
     public Expression interpret() {
@@ -83,8 +83,8 @@ class PlusNode implements Expression {
         IntNode first = (IntNode) first_child;
         IntNode second = (IntNode) second_child;
 
-        int add = Integer.parseInt(first_child.number) 
-                + Integer.parseInt(second_child.number);
+        int add = Integer.parseInt(first.number) 
+                + Integer.parseInt(second.number);
 
         IntNode result = new IntNode(add + "");
         return result;
@@ -109,8 +109,8 @@ class DivNode implements Expression {
         IntNode result = null;
 
         try {
-            int div = Integer.parseInt(first_child.number) 
-                    / Integer.parseInt(second_child.number);
+            int div = Integer.parseInt(first.number) 
+                    / Integer.parseInt(second.number);
             result = new IntNode(div + "");
         } catch (ArithmeticException e) {
             e.printStackTrace();
@@ -163,7 +163,11 @@ class GreaterNode implements Expression {
     }   
     
     public Expression interpret() {
-        return null;
+        IntNode first = (IntNode) first_child;
+        IntNode second = (IntNode) second_child;
+        if (first.number.compareTo(second.number) > 0)
+            return new BoolNode("True");
+        return new BoolNode("False");
     }
 }
 
@@ -174,7 +178,9 @@ class NotNode implements Expression {
     }
 
     public String show() {
-        return "\t<NotNode> !\n";
+        String str = "\t<NotNode> !\n";
+        str += child.show();
+        return str;
     }    
 
     public Expression interpret() {
@@ -190,7 +196,15 @@ class AssignmentNode implements Expression {
     }
 
     public String show() {
-        return "\t<AssignmentNode> =\n";
+        String str = "\t<AssignmentNode> =\n";
+        str += ((VarNode)var).show();
+        if (expression instanceof IntNode)
+            str += ((IntNode)expression).show();
+        else if (expression instanceof BoolNode)
+            str += ((BoolNode)expression).show();
+        else if (expression instanceof VarNode)
+            str += ((VarNode)expression).show();
+        return str;
     }
 
     public Expression interpret() {
@@ -209,7 +223,7 @@ class BlockNode implements Expression {
     }
 
     public String show() {
-        return "\t<BlockNode> {}\n";
+        return "\t<BlockNode> {}\n" + statement.show();
     }
 
     public Expression interpret() {
@@ -252,13 +266,37 @@ class WhileNode implements Expression {
 
 class SequenceNode implements Expression {
     Expression firstStatement, secondStatement;
-    public WhileNode (Expression firstStatement, Expression secondStatement) {
+    public SequenceNode (Expression firstStatement, Expression secondStatement) {
         this.firstStatement = firstStatement;
         this.secondStatement = secondStatement;
     }
 
     public String show() {
         return "\t<SequenceNode>\n";
+    }
+
+    public Expression interpret() {
+        return null;
+    }
+}
+
+class Symbol implements Expression {
+    private String symbol;
+    
+    public Symbol (String symbol) {
+        this.symbol = symbol;
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol (String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String show() {
+        return null;
     }
 
     public Expression interpret() {
