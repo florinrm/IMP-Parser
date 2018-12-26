@@ -69,14 +69,44 @@ class MainNode implements Expression {
 }
 
 class PlusNode implements Expression {
-    Expression first_child, second_child;
+    private Expression first_child, second_child;
     public PlusNode (Expression first_child, Expression second_child) {
         this.first_child = first_child;
         this.second_child = second_child;
     }
 
+    public PlusNode (Expression child) {
+        this(child, null);
+    }
+
+    public void setFirstChild (Expression first_child) {
+        if (this.first_child instanceof PlusNode) {
+            PlusNode node = (PlusNode) this.first_child;
+            node.setFirstChild(first_child);
+            this.first_child = node;
+        } else
+            this.first_child = first_child;
+    }
+
+    public void setSecondChild (Expression second_child) {
+        this.second_child = second_child;
+    }
+
+    public Expression getFirstChild () {
+        if (this.first_child instanceof PlusNode)
+            return ((PlusNode)this.first_child).getFirstChild();
+        else
+            return this.first_child;
+    }
+
+    public Expression getSecondChild() {
+        return second_child;
+    }
+
     public String show() {
-        return "\t<PlusNode> +\n";
+        String str = "\t<PlusNode> +\n";
+        str += first_child.show() + second_child.show();
+        return str;
     }
 
     public Expression interpret() {
@@ -121,13 +151,28 @@ class DivNode implements Expression {
 }
 
 class BracketNode implements Expression {
-    Expression child;
+    private Expression child;
+
     public BracketNode (Expression child) {
         this.child = child;
     }
 
+    public BracketNode() {
+        this(null);
+    }
+
+    public void setChild(Expression child) {
+        this.child = child;
+    }
+
+    public Expression getChild() {
+        return this.child;
+    }
+
     public String show() {
-        return "\t<BracketNode> ()\n";
+        String str = "\t<BracketNode> ()\n";
+        str += child.show();
+        return str;
     }    
 
     public Expression interpret() {
@@ -143,7 +188,9 @@ class AndNode implements Expression {
     }
 
     public String show() {
-        return "\t<AndNode> &&\n";
+        String str = "\t<AndNode> &&\n";
+        str += first_child.show() + second_child.show();
+        return str;
     }    
 
     public Expression interpret() {
@@ -159,7 +206,9 @@ class GreaterNode implements Expression {
     }
 
     public String show() {
-        return "\t<GreaterNode> >\n";
+        String str = "\t<GreaterNode> >\n";
+        str += first_child.show() + second_child.show();
+        return str;
     }   
     
     public Expression interpret() {
@@ -265,14 +314,36 @@ class WhileNode implements Expression {
 }
 
 class SequenceNode implements Expression {
-    Expression firstStatement, secondStatement;
+    private Expression firstStatement, secondStatement;
     public SequenceNode (Expression firstStatement, Expression secondStatement) {
         this.firstStatement = firstStatement;
         this.secondStatement = secondStatement;
     }
 
+    public SequenceNode (Expression firstStatement) {
+        this(firstStatement, null);
+    }
+
+    public Expression getFirstStatement() {
+        return firstStatement;
+    }
+
+    public Expression getSecondStatement() {
+        return secondStatement;
+    }
+
+    public void setFirstStatement(Expression statement) {
+        this.firstStatement = statement;
+    }
+
+    public void setSecondStatement(Expression statement) {
+        this.secondStatement = statement;
+    }
+
     public String show() {
-        return "\t<SequenceNode>\n";
+        String str =  "\t<SequenceNode>\n";
+        str += firstStatement.show() + secondStatement.show();
+        return str;
     }
 
     public Expression interpret() {
@@ -287,7 +358,7 @@ class Symbol implements Expression {
         this.symbol = symbol;
     }
 
-    public Symbol getSymbol() {
+    public String getSymbol() {
         return symbol;
     }
 
@@ -296,7 +367,7 @@ class Symbol implements Expression {
     }
 
     public String show() {
-        return null;
+        return symbol + "\n";
     }
 
     public Expression interpret() {

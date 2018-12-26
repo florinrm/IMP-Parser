@@ -1,37 +1,69 @@
+
 import java.util.*;
 
 %%
 
 %class Lexer
 %line
+%int
 %{
     Stack<Expression> stack = new Stack<>();
     // list of variables from program, in order to check what of them are initialized
-    ArrayList<Symbol> variables = new ArrayList<>();
+    ArrayList<VarNode> variables = new ArrayList<>();
 
     public static final String mainNode = "int";
+    public static final String assignSign = "=";
+    public static final String plusSign = "+";
+    public static final String divSign = "/";
 
-    Expression build() {
-        return null;
+    private boolean checkInstance() {
+        return stack.peek() instanceof Symbol || stack.peek() instanceof VarNode
+            || stack.peek() instanceof IntNode || stack.peek() instanceof PlusNode
+            || stack.peek() instanceof DivNode || stack.peek() instanceof BracketNode;
     }
 
-    Expression get_nth_element_from_stack(int element_number) {
-        Stack<Expression> temp_stack = new Stack<>();
-
-        if (element_number > stack.size()) {
-            return null;
-        }
-
-        for (int j = 0; j < element_number; ++j) {
-            temp_stack.push(stack.pop());
-        }
-
-        Expression res = temp_stack.peek();
-
-        for (int j = 0; j < element_number; ++j) {
-            stack.push(temp_stack.pop());
-        }
-        return res;
+    public Expression build() {
+        Expression expr = null;
+        while (checkInstance()) {
+                if (stack.peek() instanceof PlusNode) {
+                    PlusNode node = (PlusNode) expr;
+                    node.setFirstChild(stack.pop());
+                    expr = node;
+                } else if (stack.peek() instanceof Symbol) {
+                    Symbol symbol = (Symbol) stack.peek();
+                    if (symbol.getSymbol().compareTo(mainNode) == 0)
+                        return stack.peek();
+                    else if (symbol.getSymbol().compareTo(assignSign) == 0) { //=
+                        stack.pop();
+                        expr = new AssignmentNode(stack.peek(), expr);
+                        stack.pop();
+                        if (stack.peek() instanceof SequenceNode)
+                            return expr;
+                        else if (!(stack.peek() instanceof MainNode)) {
+                            stack.push(new SequenceNode(stack.peek()));
+                            stack.pop();
+                            return expr;
+                        } else {
+                            System.out.println("pula");
+                            return new SequenceNode(expr);
+                        }
+                    } else if (symbol.getSymbol().compareTo(plusSign) == 0) { //+
+                        stack.pop();
+                        if (expr instanceof PlusNode) {
+                            PlusNode node = (PlusNode) expr;
+                            PlusNode temp = new PlusNode(node.getFirstChild());
+                            node.setFirstChild(temp);
+                            expr = node;
+                        } else {
+                            expr = new PlusNode(expr);
+                        }
+                    }
+                } else {
+                    expr = stack.pop();
+                }
+                return expr;
+            }
+        return expr;
     }
 %}
 
@@ -47,12 +79,11 @@ greater = ">"
 assign = "="
 type = "int"
 close_instr = ";"
-variables_declaration = {var}; | {var}, {variables_declaration}
-declaration = {type} {variables_declaration}
-assign_value = {var}={aVal};
-assign_value_bool = {var}={bVal}
-assign_value_var = {var}{assign}{var}
-ignore_expr = "\n" | ","
+ignore_expr = "\n" | "," | " "
+open_bracket = "{"
+close_bracket = "}"
+open_parenthesis = "("
+close_parenthesis = ")"
 
 %%
 
@@ -62,69 +93,52 @@ ignore_expr = "\n" | ","
 {var} {
     if (stack.peek() instanceof Symbol) {
             Symbol symbol_stack = (Symbol) stack.peek();
-            if (symbol_stack.getSymbol.compareTo(mainNode) == 0)
-                variables.add(new Symbol(yytext()));
-            else
-                stack.push(new Symbol(yytext()));
+            if (symbol_stack.getSymbol().compareTo(mainNode) == 0) {
+                variables.add(new VarNode(yytext()));
+            } else if (symbol_stack.getSymbol().compareTo(divSign) == 0) {
+                stack.pop();
+                stack.push(new DivNode(stack.peek(), new VarNode(yytext())));
+                stack.pop();
+            } else {
+                stack.push(new VarNode(yytext()));
+            }
+    } else {
+        stack.push(new VarNode(yytext()));
     }
 }
-{aVal} {stack.push(new IntNode(yytext()));}
+{aVal} {
+    if (stack.peek() instanceof Symbol) {
+        Symbol symbol = (Symbol) stack.peek();
+        if (symbol.getSymbol().compareTo(divSign) == 0) {
+            stack.pop();
+            stack.push(new DivNode(stack.peek(), new VarNode(yytext())));
+            stack.pop();
+        } else {
+            stack.push(new IntNode(yytext()));
+        }
+    } else {
+        stack.push(new IntNode(yytext()));
+    }    
+}
 {bVal} {stack.push(new BoolNode(yytext()));}
-{assig} {stack.push(new Symbol(yytext()));}
-{assign_value} { 
-    String val = yytext();
-    String[] value = val.split("=");
-    VarNode variable = new VarNode(value[0]);
-    IntNode integer = new IntNode(value[1]);
-    AssignmentNode assign_node = new AssignmentNode(variable, integer);
-    if (stack.peek() instanceof SequenceNode) {
-        stack.pop();
-        stack.push(new SequenceNode(assign_node, null));
-    } else if (get_nth_element_from_stack(3) instanceof AssignmentNode) {
-        Expression val_node = stack.pop();
-        Expression var_node = stack.pop();
-        Expression assignment = stack.pop();
-        Expression seq = stack.pop();
-        stack.push(new SequenceNode(assignment, assign_node));
-        stack.push(assignment);
-        stack.push(var_node);
-        stack.push(val_node);
+{assign} {stack.push(new Symbol(yytext()));}
+{add} {stack.push(new Symbol(yytext()));}
+{div} {stack.push(new Symbol(yytext()));}
+{and} {stack.push(new Symbol(yytext()));}
+{greater} {stack.push(new Symbol(yytext()));}
+{close_instr} {
+    Expression expr = build();
+    if (!(expr instanceof Symbol)) {
+        stack.push(expr);
+    } else {
+        Symbol symbol = (Symbol) expr;
+        if (symbol.getSymbol().compareTo(mainNode) != 0) {
+            stack.push(expr);
+        } else {
+            stack.pop();
+            stack.push(new MainNode (null));
+        }
     }
-    stack.push(assign_node);
-    stack.push(variable);
-    stack.push(integer); 
 }
-{assign_value_bool} { 
-    String val = yytext();
-    String[] value = val.split("=");
-    VarNode variable = new VarNode(value[0]);
-    BoolNode bool = new BoolNode(value[1]);
-    AssignmentNode assign_node = new AssignmentNode(variable, bool);
-    if (stack.peek() instanceof SequenceNode) {
-        stack.pop();
-        stack.push(new SequenceNode(assign_node, null));
-    } else if (get_nth_element_from_stack(3) instanceof AssignmentNode) {
-        Expression val_node = stack.pop();
-        Expression var_node = stack.pop();
-        Expression assignment = stack.pop();
-        Expression seq = stack.pop();
-        stack.push(new SequenceNode(assignment, assign_node));
-        stack.push(assignment);
-        stack.push(var_node);
-        stack.push(val_node);
-    }
-    stack.push(assign_node);
-    stack.push(variable);
-    stack.push(bool); 
-}
-{assign_value_var} { 
-    String val = yytext();
-    String[] value = val.split("=");
-    VarNode variable1 = new VarNode(value[0]);
-    VarNode variable2 = new VarNode(value[1]);
-    AssignmentNode assign_node = new AssignmentNode(variable1, variable2);
-    stack.push(assign_node);
-    stack.push(variable1);
-    stack.push(variable2);
-}
-{ignore_expr} {// do nothing}
+{ignore_expr} {/* do nothing */}
+. {}
