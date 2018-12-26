@@ -20,21 +20,21 @@ public class Parser {
 		Expression expression = null;
 		expression = l.stack.pop();
 		//System.out.println(expression.show());
-		
+		/*
 		System.out.println(l.stack.size()); 
 		while (!l.stack.empty()) {
 			System.out.println(l.stack.pop().show());
-		}
+		}*/
 		//System.out.println(expression.show());
-		
 		while (!(l.stack.peek() instanceof MainNode)) {
 			if (l.stack.peek() instanceof SequenceNode) {
 				SequenceNode seq = (SequenceNode) l.stack.pop();
-				System.out.println(seq.show());
+				//System.out.println(seq.show());
 				seq.setSecondStatement(expression);
 				expression = seq;
 			}
 		} 
+		//System.out.println(expression.show());
 		l.stack.pop();
 		l.stack.push(new MainNode(expression));
 		System.out.println((l.stack.pop()).show());

@@ -61,7 +61,6 @@ import java.util.*;
                 } else {
                     expr = stack.pop();
                 }
-                return expr;
             }
         return expr;
     }
@@ -111,7 +110,7 @@ close_parenthesis = ")"
         Symbol symbol = (Symbol) stack.peek();
         if (symbol.getSymbol().compareTo(divSign) == 0) {
             stack.pop();
-            stack.push(new DivNode(stack.peek(), new VarNode(yytext())));
+            stack.push(new DivNode(stack.peek(), new IntNode(yytext())));
             stack.pop();
         } else {
             stack.push(new IntNode(yytext()));

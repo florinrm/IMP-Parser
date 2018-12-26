@@ -14,7 +14,7 @@ class IntNode implements Expression {
     }
 
     public String show() {
-        return "\t<IntNode> " + number; 
+        return "\t<IntNode> " + number + "\n"; 
     }
 
     public Expression interpret() {
@@ -60,7 +60,9 @@ class MainNode implements Expression {
     }
 
     public String show() {
-        return "<MainNode>\n";
+        String str = "<MainNode>\n";
+        str += child.show();
+        return str;
     }
 
     public Expression interpret() {
@@ -105,7 +107,7 @@ class PlusNode implements Expression {
 
     public String show() {
         String str = "\t<PlusNode> +\n";
-        str += first_child.show() + second_child.show();
+        str += "\t" + first_child.show() + "\t" + second_child.show();
         return str;
     }
 
@@ -246,13 +248,13 @@ class AssignmentNode implements Expression {
 
     public String show() {
         String str = "\t<AssignmentNode> =\n";
-        str += ((VarNode)var).show();
+        str += "\t" + ((VarNode)var).show();
         if (expression instanceof IntNode)
-            str += ((IntNode)expression).show();
+            str += "\t" + ((IntNode)expression).show();
         else if (expression instanceof BoolNode)
-            str += ((BoolNode)expression).show();
+            str += "\t" + ((BoolNode)expression).show();
         else if (expression instanceof VarNode)
-            str += ((VarNode)expression).show();
+            str += "\t" + ((VarNode)expression).show();
         return str;
     }
 
