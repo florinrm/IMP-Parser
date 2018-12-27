@@ -14,7 +14,7 @@ class IntNode implements Expression {
     }
 
     public String show() {
-        return "\t<IntNode> " + number + "\n"; 
+        return "<IntNode> " + number + "\n"; 
     }
 
     public Expression interpret() {
@@ -30,7 +30,7 @@ class VarNode implements Expression {
     }
 
     public String show() {
-        return "\t<VarNode> " + string + "\n"; 
+        return "<VariableNode> " + string + "\n"; 
     }
 
     public Expression interpret() {
@@ -45,7 +45,7 @@ class BoolNode implements Expression {
     }
 
     public String show() {
-        return "\t<BoolNode> " + value + "\n";
+        return "<BoolNode> " + value + "\n";
     }
 
     public Expression interpret() {
@@ -61,7 +61,8 @@ class MainNode implements Expression {
 
     public String show() {
         String str = "<MainNode>\n";
-        str += child.show();
+        if (child != null)
+            str += Parser.addNewLine(child.show());
         return str;
     }
 
@@ -78,7 +79,7 @@ class PlusNode implements Expression {
     }
 
     public PlusNode (Expression child) {
-        this(child, null);
+        this(null, child);
     }
 
     public void setFirstChild (Expression first_child) {
@@ -86,6 +87,7 @@ class PlusNode implements Expression {
             PlusNode node = (PlusNode) this.first_child;
             node.setFirstChild(first_child);
             this.first_child = node;
+            System.out.println("muie");
         } else
             this.first_child = first_child;
     }
@@ -95,9 +97,10 @@ class PlusNode implements Expression {
     }
 
     public Expression getFirstChild () {
-        if (this.first_child instanceof PlusNode)
-            return ((PlusNode)this.first_child).getFirstChild();
-        else
+        if (this.first_child instanceof PlusNode) {
+            PlusNode node = (PlusNode) this.first_child;
+            return node.getFirstChild();
+        } else
             return this.first_child;
     }
 
@@ -106,8 +109,11 @@ class PlusNode implements Expression {
     }
 
     public String show() {
-        String str = "\t<PlusNode> +\n";
-        str += "\t" + first_child.show() + "\t" + second_child.show();
+        String str = "<PlusNode> +\n";
+        if (second_child != null)
+            str += Parser.addNewLine(first_child.show() + second_child.show());
+        else
+            str += Parser.addNewLine(first_child.show());
         return str;
     }
 
@@ -131,7 +137,12 @@ class DivNode implements Expression {
     }
 
     public String show() {
-        return "\t<DivNode> /\n";
+        String str = "<DivNode> /\n";
+        if (second_child != null)
+            str += Parser.addNewLine(first_child.show() + second_child.show());
+        else
+            str += Parser.addNewLine(first_child.show());
+        return str;
     }
 
     public Expression interpret() {
@@ -172,8 +183,8 @@ class BracketNode implements Expression {
     }
 
     public String show() {
-        String str = "\t<BracketNode> ()\n";
-        str += child.show();
+        String str = "<BracketNode> ()\n";
+        str += Parser.addNewLine(child.show());
         return str;
     }    
 
@@ -190,8 +201,8 @@ class AndNode implements Expression {
     }
 
     public String show() {
-        String str = "\t<AndNode> &&\n";
-        str += first_child.show() + second_child.show();
+        String str = "<AndNode> &&\n";
+        str += Parser.addNewLine(first_child.show() + second_child.show());
         return str;
     }    
 
@@ -208,8 +219,8 @@ class GreaterNode implements Expression {
     }
 
     public String show() {
-        String str = "\t<GreaterNode> >\n";
-        str += first_child.show() + second_child.show();
+        String str = "<GreaterNode> >\n";
+        str += Parser.addNewLine(first_child.show() + second_child.show());
         return str;
     }   
     
@@ -229,8 +240,8 @@ class NotNode implements Expression {
     }
 
     public String show() {
-        String str = "\t<NotNode> !\n";
-        str += child.show();
+        String str = "<NotNode> !\n";
+        str += Parser.addNewLine(child.show());
         return str;
     }    
 
@@ -240,21 +251,15 @@ class NotNode implements Expression {
 }
 
 class AssignmentNode implements Expression {
-    Expression var, expression;
+    public Expression var, expression;
     public AssignmentNode (Expression var, Expression expression) {
         this.var = var;
         this.expression = expression;
     }
 
     public String show() {
-        String str = "\t<AssignmentNode> =\n";
-        str += "\t" + ((VarNode)var).show();
-        if (expression instanceof IntNode)
-            str += "\t" + ((IntNode)expression).show();
-        else if (expression instanceof BoolNode)
-            str += "\t" + ((BoolNode)expression).show();
-        else if (expression instanceof VarNode)
-            str += "\t" + ((VarNode)expression).show();
+        String str = "<AssignmentNode> =\n";
+        str += Parser.addNewLine(var.show() + expression.show());
         return str;
     }
 
@@ -270,11 +275,11 @@ class BlockNode implements Expression {
     }
 
     public BlockNode () {
-        this.statement = null;
+        this(null);
     }
 
     public String show() {
-        return "\t<BlockNode> {}\n" + statement.show();
+        return "<BlockNode> {}\n" + statement.show();
     }
 
     public Expression interpret() {
@@ -283,15 +288,45 @@ class BlockNode implements Expression {
 }
 
 class IfNode implements Expression {
-    Expression condition, thenBlock, elseBlock;
+    private Expression condition, thenBlock, elseBlock;
     public IfNode (Expression condition, Expression thenBlock, Expression elseBlock) {
         this.condition = condition;
         this.thenBlock = thenBlock;
         this.elseBlock = elseBlock;
     }
 
+    public IfNode (Expression condition) {
+        this(condition, null, null);
+    }
+
+    public Expression getCondition() {
+        return condition;
+    }
+
+    public Expression getThenBlock() {
+        return thenBlock;
+    }
+
+    public Expression getElseBlock() {
+        return elseBlock;
+    }
+
+    public void setCondition(Expression condition) {
+        this.condition = condition;
+    }
+
+    public void setThenBlock (Expression thenBlock) {
+        this.thenBlock = thenBlock;
+    }
+
+    public void setElseBlock (Expression elseBlock) {
+        this.elseBlock = elseBlock;
+    }
+
     public String show() {
-        return "\t<IfNode> if\n";
+        String str = "<IfNode> if\n";
+        str += Parser.addNewLine(condition.show() + thenBlock.show() + elseBlock.show());
+        return str;
     }
 
     public Expression interpret() {
@@ -306,8 +341,12 @@ class WhileNode implements Expression {
         this.body = body;
     }
 
+    public WhileNode (Expression condition) {
+        this (condition, null);
+    }
+
     public String show() {
-        return "\t<WhileNode> while\n";
+        return "<WhileNode> while\n";
     }
 
     public Expression interpret() {
@@ -324,6 +363,10 @@ class SequenceNode implements Expression {
 
     public SequenceNode (Expression firstStatement) {
         this(firstStatement, null);
+    }
+
+    public SequenceNode() {
+        this(null);
     }
 
     public Expression getFirstStatement() {
@@ -343,8 +386,20 @@ class SequenceNode implements Expression {
     }
 
     public String show() {
-        String str =  "\t<SequenceNode>\n";
-        str += firstStatement.show() + secondStatement.show();
+        String str =  "<SequenceNode>\n"; /*
+        if (firstStatement == null)
+            System.out.println("NULL FIRST");
+        else
+            System.out.println("GOOD FIRST");
+        if (secondStatement == null)
+            System.out.println("NULL SECOND");
+        else
+            System.out.println("GOOD SECOND"); */
+        //str += "\t" + firstStatement.show(); 
+        if (secondStatement != null)
+            str += Parser.addNewLine(firstStatement.show() + secondStatement.show());
+        else
+            str += Parser.addNewLine(firstStatement.show());
         return str;
     }
 
