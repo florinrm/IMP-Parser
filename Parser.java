@@ -28,7 +28,7 @@ public class Parser {
 			System.out.println(l.stack.peek().getClass());
 			System.out.println(l.stack.peek().show());
 			l.stack.pop();
-		}
+		}*/
 		/*
 		Stack<Expression> st = new Stack<Expression>();
 		st.addAll(l.stack); 

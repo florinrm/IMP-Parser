@@ -94,6 +94,7 @@ close_parenthesis = ")"
 {type} {
     stack.push(new Symbol(mainNode));
 }
+{statement} {stack.push(new Symbol(yytext()));}
 {var} {
     if (stack.peek() instanceof Symbol) {
             Symbol symbol_stack = (Symbol) stack.peek();
@@ -106,6 +107,7 @@ close_parenthesis = ")"
                 stack.push(new VarNode(yytext()));
             }
     } else {
+        System.out.println("pula");
         stack.push(new VarNode(yytext()));
     }
 }
@@ -141,6 +143,13 @@ close_parenthesis = ")"
                     PlusNode temp = new PlusNode (node.getFirstChild());
                     node.setFirstChild(temp);
                     expression = node;
+                } else if (expression instanceof GreaterNode) {
+                    GreaterNode node = (GreaterNode) expression;
+                    if (node.getFirstChild() instanceof PlusNode) {
+
+                    } else {
+                        PlusNode temp = new PlusNode()
+                    }
                 } else {
                     expression = new PlusNode(expression);
                 }
@@ -177,7 +186,7 @@ close_parenthesis = ")"
     if (!(expression instanceof BlockNode)) {
         while (!(stack.peek() instanceof BlockNode)) {
             if (stack.peek() instanceof SequenceNode) {
-                SequenceNode node = (SequenceNode) stack.peek();
+                SequenceNode node = (SequenceNode) stack.pop();
                 node.setSecondStatement(expression);
                 expression = node;
             }
