@@ -33,7 +33,11 @@ public class SequenceNode implements Expression {
     }
 
     public String show() {
-        String str =  "<SequenceNode>\n"; 
+        String str =  "<SequenceNode>\n";
+        if (firstStatement == null && secondStatement != null)
+            str += Parser.addNewLine(secondStatement.show());
+        if (firstStatement == null && secondStatement == null)
+            return str; 
         if (secondStatement != null)
             str += Parser.addNewLine(firstStatement.show() + secondStatement.show());
         else

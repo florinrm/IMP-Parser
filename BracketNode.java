@@ -22,7 +22,8 @@ public class BracketNode implements Expression {
 
     public String show() {
         String str = "<BracketNode> ()\n";
-        str += Parser.addNewLine(child.show());
+        if (child != null)
+            str += Parser.addNewLine(child.show());
         return str;
     }    
 
