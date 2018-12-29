@@ -12,8 +12,17 @@ public class WhileNode implements Expression {
         this (condition, null);
     }
 
+    public void setBody (Expression body) {
+        this.body = body;
+    }
+
     public String show() {
-        return "<WhileNode> while\n";
+        String str = "<WhileNode> while\n";
+        if (condition != null)
+            str += Parser.addNewLine(condition.show());
+        if (body != null)
+            str += Parser.addNewLine(body.show());
+        return str;
     }
 
     public Expression interpret() {

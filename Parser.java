@@ -14,7 +14,7 @@ public class Parser {
 	}
 	
 	public static void main (String[] args) throws IOException {
-		Lexer l = new Lexer(new FileReader(args[0]));
+		Lexer l = new Lexer(new FileReader("input"));
 
 		l.yylex();
 		Expression expression = null;
@@ -24,17 +24,18 @@ public class Parser {
 		//System.out.println(expression.show());
 		
 		//System.out.println(l.stack.size()); 
-		
+		/*
 		while (!l.stack.empty()) {
 			System.out.println(l.stack.peek().getClass());
 			System.out.println(l.stack.peek().show());
 			l.stack.pop();
-		}
+		}*/
 		
 		Stack<Expression> st = new Stack<Expression>();
 		st.addAll(l.stack); 
+		System.out.println("Stack size" + st.size());
 		while (!st.empty()) {
-			//System.out.println(st.peek().show());
+			System.out.println(st.peek().show());
 			//System.out.println(st.peek().getClass());
 			st.pop();
 		}
@@ -43,7 +44,7 @@ public class Parser {
 			if (l.stack.peek() instanceof SequenceNode) {
 				SequenceNode seq = (SequenceNode) l.stack.pop();
 				seq.setSecondStatement(expression);
-				System.out.println(expression.show());
+				//System.out.println(expression.show());
 				expression = seq;
 			}
 		} 

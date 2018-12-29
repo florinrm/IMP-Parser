@@ -26,7 +26,7 @@ public class AndNode implements Expression {
     }
 
     public void setFirstChild (Expression first_child) {
-        if (first_child instanceof AndNode) {
+        if (this.first_child instanceof AndNode) {
             AndNode node = (AndNode) this.first_child;
             node.setFirstChild(first_child);
             this.first_child = node;
@@ -41,7 +41,14 @@ public class AndNode implements Expression {
 
     public String show() {
         String str = "<AndNode> &&\n";
-        str += Parser.addNewLine(first_child.show() + second_child.show());
+        if (second_child == null && first_child == null)
+            return str;
+        if (first_child != null && second_child == null)
+            str += Parser.addNewLine(first_child.show());
+        else if (first_child == null && second_child != null)
+            str += Parser.addNewLine(second_child.show());
+        else
+            str += Parser.addNewLine(first_child.show() + second_child.show());
         return str;
     }    
 
