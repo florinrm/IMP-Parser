@@ -2,7 +2,7 @@ import java.*;
 import java.util.*;
 
 public class AssignmentNode implements Expression {
-    public Expression var, expression;
+    private Expression var, expression;
     public AssignmentNode (Expression var, Expression expression) {
         this.var = var;
         this.expression = expression;
@@ -14,7 +14,41 @@ public class AssignmentNode implements Expression {
         return str;
     }
 
+    public Expression getVariable() {
+        return var;
+    }
+
+    public Expression getValue() {
+        return expression;
+    }
+
+    public void setVariable(Expression var) {
+        this.var = var;
+    }
+
+    public void setValue (Expression expression) {
+        this.expression = expression;
+    }
+
     public Expression interpret() {
-        return null;
+        if (var instanceof VarNode) {
+            VarNode node = (VarNode) var;
+            System.out.println(expression.show());
+            Expression temp = expression.interpret();
+            //if (temp != null) {
+                if (temp instanceof IntNode) {
+                    IntNode aux = (IntNode) temp;
+                    Singleton.getInstance().var_values.put(node.getVarName(), aux.interpret());
+                } else if (temp instanceof BoolNode) {
+                    BoolNode aux = (BoolNode) temp;
+                    Singleton.getInstance().var_values.put(node.getVarName(), aux.interpret());
+                } else {
+                    System.out.println(temp.getClass());
+                    Singleton.getInstance().var_values.put(node.getVarName(), temp.interpret());
+                }
+            //}
+            //Singleton.getInstance().put(node, )
+        }
+        return var.interpret();
     }
 }

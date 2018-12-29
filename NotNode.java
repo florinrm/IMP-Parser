@@ -14,6 +14,14 @@ public class NotNode implements Expression {
     }    
 
     public Expression interpret() {
+        Expression node = child.interpret();
+        if (node instanceof BoolNode) {
+            BoolNode bool = (BoolNode) node;
+            if (bool.isTrue())
+                return new BoolNode(BoolNode.trueValue);
+            else
+                return new BoolNode(BoolNode.falseValue);
+        }
         return null;
     }
 }

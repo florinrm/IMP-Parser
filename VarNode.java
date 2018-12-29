@@ -3,8 +3,22 @@ import java.util.*;
 
 // VarNode - string
 public class VarNode implements Expression {
-    String string;
+    private String string;
+    private int value;
     public VarNode (String string) {
+        this(string, "-1000");
+    }
+
+    public VarNode (String string, String val) {
+        this.string = string;
+        this.value = Integer.parseInt(val);
+    }
+
+    public String getVarName() {
+        return string;
+    }
+
+    public void setVarName (String string) {
         this.string = string;
     }
 
@@ -13,6 +27,6 @@ public class VarNode implements Expression {
     }
 
     public Expression interpret() {
-        return null;
+        return Singleton.getInstance().var_values.get(string);
     }
 }

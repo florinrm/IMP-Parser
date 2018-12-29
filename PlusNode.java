@@ -47,13 +47,66 @@ public class PlusNode implements Expression {
     }
 
     public Expression interpret() {
-        IntNode first = (IntNode) first_child;
-        IntNode second = (IntNode) second_child;
+        Expression first = first_child;
+        Expression second = second_child;
+        int result = 0, one, two;
 
-        int add = Integer.parseInt(first.number) 
-                + Integer.parseInt(second.number);
+        if (first instanceof VarNode) {
+            VarNode node = (VarNode) first;
+            Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
+            IntNode aux = (IntNode) temp;
+            one = Integer.parseInt(aux.number);
+            result += one;
+        } else if (first instanceof IntNode) {
+            IntNode aux = (IntNode) first;
+            one = Integer.parseInt(aux.number);
+            result += one;
+        } else if (first instanceof PlusNode) {
+            PlusNode node = (PlusNode) first;
+            first = node.interpret();
+            if (first instanceof IntNode) {
+                IntNode temp = (IntNode) first;
+                one = Integer.parseInt(temp.number);
+                result += one;
+            }
+        } else if (first instanceof DivNode) {
+            DivNode node = (DivNode) first;
+            first = node.interpret();
+            if (first instanceof IntNode) {
+                IntNode temp = (IntNode) first;
+                one = Integer.parseInt(temp.number);
+                result += one;
+            }
+        }
 
-        IntNode result = new IntNode(add + "");
-        return result;
+        if (second instanceof VarNode) {
+            VarNode node = (VarNode) second;
+            Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
+            IntNode aux = (IntNode) temp;
+            two = Integer.parseInt(aux.number);
+            result += two;
+        } else if (second instanceof IntNode) {
+            IntNode aux = (IntNode) second;
+            two = Integer.parseInt(aux.number);
+            result += two;
+        } else if (second instanceof PlusNode) {
+            PlusNode node = (PlusNode) second;
+            second = node.interpret();
+            if (second instanceof IntNode) {
+                IntNode temp = (IntNode) second;
+                two = Integer.parseInt(temp.number);
+                result += two;
+            }
+        } else if (second instanceof DivNode) {
+            DivNode node = (DivNode) second;
+            second = node.interpret();
+            if (second instanceof IntNode) {
+                IntNode temp = (IntNode) second;
+                two = Integer.parseInt(temp.number);
+                result += two;
+            }
+        }
+        String res = result + "";
+        return new IntNode(res);
     }
 }

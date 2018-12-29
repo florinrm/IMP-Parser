@@ -10,6 +10,7 @@ import java.util.*;
     Stack<Expression> stack = new Stack<>();
     // list of variables from program, in order to check what of them are initialized
     ArrayList<VarNode> variables = new ArrayList<>();
+	public static HashMap<String, Expression> var_values = new HashMap<>();
 
     private static final String mainNode = "int";
     private static final String assignSign = "=";
@@ -21,6 +22,7 @@ import java.util.*;
     private static final String greaterSign = ">";
     private static final String andSign = "&&";
     private static final String notSign = "!";
+
 
     private boolean checkInstance() {
         return stack.peek() instanceof Symbol || stack.peek() instanceof VarNode
@@ -38,6 +40,24 @@ import java.util.*;
 					else if (symbol.getSymbol().compareTo(assignSign) == 0) {
 						stack.pop();
 						expr = new AssignmentNode(stack.peek(), expr);
+						System.out.println("Muia\n" + stack.peek().show() + "\n" + expr.show());
+						//System.out.println("Pula\n" + stack.peek().getClass() + "\n" + expr.getClass());
+						
+						AssignmentNode node = (AssignmentNode) expr;
+						Expression variable = node.getVariable();
+						Expression value = node.getValue();
+						if (variable instanceof VarNode) {
+							VarNode temp = (VarNode) variable;
+							if (value instanceof VarNode) {
+								VarNode aux = (VarNode) value;
+								Singleton.getInstance().var_values.put(temp.getVarName(), Singleton.getInstance().var_values.get(aux.getVarName()));
+							} else if (value instanceof IntNode || value instanceof BoolNode) {
+								Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+							} else if (value instanceof PlusNode || value instanceof DivNode) {
+								Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+							}
+						}
+						
 						stack.pop();
 						if (stack.peek() instanceof SequenceNode || stack.peek() instanceof BlockNode)
 							return expr;
@@ -110,7 +130,8 @@ not = "!"
     if (stack.peek() instanceof Symbol) {
             Symbol symbol_stack = (Symbol) stack.peek();
             if (symbol_stack.getSymbol().compareTo(mainNode) == 0) {
-                variables.add(new VarNode(yytext()));
+				VarNode node = new VarNode(yytext());
+				var_values.put(node.getVarName(), null);
             } else if (symbol_stack.getSymbol().compareTo(divSign) != 0) {
 				stack.push(new VarNode(yytext()));
             } else {

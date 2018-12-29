@@ -46,6 +46,12 @@ public class SequenceNode implements Expression {
     }
 
     public Expression interpret() {
+        if (firstStatement != null) {
+            firstStatement.interpret();
+        }
+        if (secondStatement != null) {
+            secondStatement.interpret();
+        }
         return null;
     }
 }

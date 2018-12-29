@@ -2,7 +2,11 @@ import java.*;
 import java.util.*;
 
 public class BoolNode implements Expression {
-    String value;
+    private String value;
+
+    public final static String trueValue = "true";
+    public final static String falseValue = "false";
+
     public BoolNode (String value) {
         this.value = value;
     }
@@ -13,5 +17,21 @@ public class BoolNode implements Expression {
 
     public Expression interpret() {
         return this;
+    }
+
+    public boolean isTrue() {
+        return value.equals(trueValue);
+    }
+
+    public boolean isFalse() {
+        return value.equals(falseValue);
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue (String value) {
+        this.value = value;
     }
 }

@@ -53,6 +53,13 @@ public class AndNode implements Expression {
     }    
 
     public Expression interpret() {
-        return null;
+        Expression first = getFirstChild();
+        Expression second = getSecondChild();
+        String result;
+        if (first.show().equals("true") && second.show().equals("true"))
+            result = "true";
+        else
+            result = "false";
+        return new BoolNode(result);
     }
 }
