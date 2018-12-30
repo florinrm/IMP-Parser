@@ -20,15 +20,22 @@ public class MainNode implements Expression {
             Expression expr = child.interpret();
             String str = "";
             for (Map.Entry<String, Expression> entry: Singleton.getInstance().var_values.entrySet()) {
-                str += entry.getKey() + "=" + entry.getValue().interpret().show().split(" ")[1];
+                if (entry.getValue() != null)
+                    str += entry.getKey() + "=" + entry.getValue().interpret().show().split(" ")[1];
+                else
+                    str += entry.getKey() + "=null\n";
             }
-            //str = str.substring(0, str.length() - 1);
-            try (FileWriter writer = new FileWriter("output")) {
-                writer.write(str);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+
+            PrintWriter printWriter = null;
+            try {
+                printWriter = new PrintWriter ("output");
+                printWriter.print(str);
+                printWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (printWriter != null)
+                    printWriter.close();
             }
             return expr;
         }

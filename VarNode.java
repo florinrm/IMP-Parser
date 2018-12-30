@@ -5,6 +5,7 @@ import java.util.*;
 public class VarNode implements Expression {
     private String string;
     private int value;
+    private int line; // for errors or warnings
     public VarNode (String string) {
         this(string, "-1000");
     }
@@ -12,6 +13,16 @@ public class VarNode implements Expression {
     public VarNode (String string, String val) {
         this.string = string;
         this.value = Integer.parseInt(val);
+    }
+
+    public VarNode (String string, int line) {
+        this(string, "-1000", line);
+    }
+
+    public VarNode (String string, String val, int line) {
+        this.string = string;
+        this.value = Integer.parseInt(val);
+        this.line = line;
     }
 
     public String getVarName() {
@@ -23,7 +34,16 @@ public class VarNode implements Expression {
     }
 
     public String show() {
+        //return line + " <VariableNode> " + string + "\n"; 
         return "<VariableNode> " + string + "\n"; 
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 
     public Expression interpret() {

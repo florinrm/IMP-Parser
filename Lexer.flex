@@ -23,6 +23,8 @@ import java.util.*;
     private static final String andSign = "&&";
     private static final String notSign = "!";
 
+	public boolean toIntepret = false;
+
 
     private boolean checkInstance() {
         return stack.peek() instanceof Symbol || stack.peek() instanceof VarNode
@@ -39,22 +41,34 @@ import java.util.*;
 						return stack.peek();
 					else if (symbol.getSymbol().compareTo(assignSign) == 0) {
 						stack.pop();
-						expr = new AssignmentNode(stack.peek(), expr);
-						System.out.println("Muia\n" + stack.peek().show() + "\n" + expr.show());
+
+						VarNode muie_dragnea = (VarNode) stack.peek();
+						muie_dragnea.setLine(Singleton.count);
+						if (expr instanceof VarNode) {
+							VarNode muie_viorica = (VarNode) expr;
+							muie_viorica.setLine(Singleton.count);
+							expr = new AssignmentNode(muie_dragnea, muie_viorica);
+						} else {
+							expr = new AssignmentNode(muie_dragnea, expr);
+						}
+						
+						//System.out.println("Muia\n" + stack.peek().show() + "\n" + expr.show());
 						//System.out.println("Pula\n" + stack.peek().getClass() + "\n" + expr.getClass());
 						
 						AssignmentNode node = (AssignmentNode) expr;
 						Expression variable = node.getVariable();
 						Expression value = node.getValue();
-						if (variable instanceof VarNode) {
-							VarNode temp = (VarNode) variable;
-							if (value instanceof VarNode) {
-								VarNode aux = (VarNode) value;
-								Singleton.getInstance().var_values.put(temp.getVarName(), Singleton.getInstance().var_values.get(aux.getVarName()));
-							} else if (value instanceof IntNode || value instanceof BoolNode) {
-								Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
-							} else if (value instanceof PlusNode || value instanceof DivNode) {
-								Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+						if (toIntepret) {
+							if (variable instanceof VarNode) {
+								VarNode temp = (VarNode) variable;
+								if (value instanceof VarNode) {
+									VarNode aux = (VarNode) value;
+									Singleton.getInstance().var_values.put(temp.getVarName(), Singleton.getInstance().var_values.get(aux.getVarName()));
+								} else if (value instanceof IntNode || value instanceof BoolNode) {
+									Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+								} else if (value instanceof PlusNode || value instanceof DivNode) {
+									Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+								}
 							}
 						}
 						
@@ -72,11 +86,11 @@ import java.util.*;
 						stack.pop();
 						if(expr instanceof PlusNode) {
 							PlusNode node = (PlusNode) expr;
-                            PlusNode temp = new PlusNode(node.getFirstChild());
+                            PlusNode temp = new PlusNode(node.getFirstChild(), Singleton.count);
                             node.setFirstChild(temp);
                             expr = node;
 						} else {
-							expr = new PlusNode(expr);
+							expr = new PlusNode(expr, Singleton.count);
 						}
 					}
                 }
@@ -105,7 +119,8 @@ assign = "="
 statement = "if" | "while" | "else"
 type = "int"
 close_instr = ";"
-ignore_expr = "\n" | ","
+new_line = "\n"
+ignore_expr = ","
 open_bracket = "{"
 close_bracket = "}"
 open_parenthesis = "("
@@ -131,12 +146,13 @@ not = "!"
             Symbol symbol_stack = (Symbol) stack.peek();
             if (symbol_stack.getSymbol().compareTo(mainNode) == 0) {
 				VarNode node = new VarNode(yytext());
-				var_values.put(node.getVarName(), null);
+				if (toIntepret)
+					Singleton.getInstance().var_values.put(node.getVarName(), null);
             } else if (symbol_stack.getSymbol().compareTo(divSign) != 0) {
 				stack.push(new VarNode(yytext()));
             } else {
                 stack.pop();
-                stack.push(new DivNode(stack.pop(), new VarNode(yytext())));
+                stack.push(new DivNode(stack.pop(), new VarNode(yytext(), Singleton.count), Singleton.count));
             }
     } else {
         stack.push(new VarNode(yytext()));
@@ -147,13 +163,13 @@ not = "!"
     if (stack.peek() instanceof Symbol) {
         Symbol symbol = (Symbol) stack.peek();
         if (symbol.getSymbol().compareTo(divSign) != 0) {
-			stack.push(new IntNode(yytext()));
+			stack.push(new IntNode(yytext(), Singleton.count));
         } else {
             stack.pop();
-            stack.push(new DivNode(stack.pop(), new IntNode(yytext())));
+            stack.push(new DivNode(stack.pop(), new IntNode(yytext(), Singleton.count), Singleton.count));
         }
     } else {
-        stack.push(new IntNode(yytext()));
+        stack.push(new IntNode(yytext(), Singleton.count));
     }    
 }
 
@@ -194,7 +210,7 @@ not = "!"
 					stack.pop();
 					if (expression instanceof PlusNode) {
 						PlusNode node = (PlusNode) expression;
-						PlusNode temp = new PlusNode (node.getFirstChild());
+						PlusNode temp = new PlusNode (node.getFirstChild(), Singleton.count);
 						node.setFirstChild(temp);
 						expression = node;
 					}
@@ -202,21 +218,37 @@ not = "!"
 							GreaterNode node = (GreaterNode) expression;
 							if(node.getFirstChild() instanceof PlusNode) {
 								PlusNode temp = (PlusNode) node.getFirstChild();
-								PlusNode aux = new PlusNode(temp.getFirstChild());
+								PlusNode aux = new PlusNode(temp.getFirstChild(), Singleton.count);
 								temp.setFirstChild(aux);
 								node.setFirstChild(temp);
 								expression = node;
 							} else {
-								PlusNode temp = new PlusNode(node.getFirstChild());
+								PlusNode temp = new PlusNode(node.getFirstChild(), Singleton.count);
 								node.setFirstChild(temp);
 								expression = node;
 							}
 					} else {
-						expression = new PlusNode(expression);
+						expression = new PlusNode(expression, Singleton.count);
 					}
 				} else if (symbol.getSymbol().compareTo(greaterSign) == 0) {
 					stack.pop();
-					expression = new GreaterNode(stack.peek(), expression);
+					if (stack.peek() instanceof VarNode && expression instanceof VarNode) {
+						VarNode first = (VarNode) stack.peek();
+						VarNode second = (VarNode) expression;
+						first.setLine(Singleton.count);
+						second.setLine(Singleton.count);
+						expression = new GreaterNode(first, second);
+					} else if (stack.peek() instanceof VarNode) {
+						VarNode first = (VarNode) stack.peek();
+						first.setLine(Singleton.count);
+						expression = new GreaterNode(first, expression);
+					} else if (expression instanceof VarNode) {
+						VarNode second = (VarNode) expression;
+						second.setLine(Singleton.count);
+						expression = new GreaterNode(stack.peek(), second);
+					} else {
+						expression = new GreaterNode(stack.peek(), expression);
+					}
 					stack.pop();
 				} 
 				else if (symbol.getSymbol().compareTo(andSign) == 0) {
@@ -276,7 +308,7 @@ not = "!"
 			} 
 			else if (symbol.getSymbol().compareTo(divSign) == 0)  {
 				stack.pop();
-				expression = new DivNode(stack.peek(), expression);
+				expression = new DivNode(stack.peek(), expression, Singleton.count);
 				stack.pop();
 			} 
 		}
@@ -351,4 +383,5 @@ not = "!"
 }
 
 {ignore_expr} {/* do nothing */}
+{new_line} {Singleton.count++;}
 . {}

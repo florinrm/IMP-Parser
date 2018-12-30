@@ -3,9 +3,16 @@ import java.util.*;
 
 public class AssignmentNode implements Expression {
     private Expression var, expression;
+    private int line; // for errors or warnings
     public AssignmentNode (Expression var, Expression expression) {
         this.var = var;
         this.expression = expression;
+    }
+
+    public AssignmentNode (Expression var, Expression expression, int line) {
+        this.var = var;
+        this.expression = expression;
+        this.line = line;
     }
 
     public String show() {
@@ -33,7 +40,7 @@ public class AssignmentNode implements Expression {
     public Expression interpret() {
         if (var instanceof VarNode) {
             VarNode node = (VarNode) var;
-            System.out.println(expression.show());
+            //System.out.println(expression.show());
             Expression temp = expression.interpret();
             //if (temp != null) {
                 if (temp instanceof IntNode) {

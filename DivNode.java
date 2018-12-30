@@ -1,11 +1,19 @@
 import java.*;
 import java.util.*;
+import java.io.*;
 
 class DivNode implements Expression {
     Expression first_child, second_child;
+    private int line; // errors or warnings
     public DivNode (Expression first_child, Expression second_child) {
         this.first_child = first_child;
         this.second_child = second_child;
+    }
+
+    public DivNode (Expression first_child, Expression second_child, int line) {
+        this.first_child = first_child;
+        this.second_child = second_child;
+        this.line = line;
     }
 
     public String show() {
@@ -17,6 +25,14 @@ class DivNode implements Expression {
         return str;
     }
 
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
     public Expression interpret() {
         Expression first = first_child;
         Expression second = second_child;
@@ -26,6 +42,10 @@ class DivNode implements Expression {
         if (first instanceof VarNode) {
             VarNode node = (VarNode) first;
             Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
+            if (temp == null) {
+                System.out.println("MIHU ARE PULA MICA 1");
+                Singleton.getInstance().finishProgram("UnassignedVar", line);
+            }
             IntNode aux = (IntNode) temp;
             one = Integer.parseInt(aux.number);
         } else if (first instanceof IntNode) {
@@ -40,6 +60,13 @@ class DivNode implements Expression {
             }
         } else if (first instanceof DivNode) {
             DivNode node = (DivNode) first;
+            first = node.interpret();
+            if (first instanceof IntNode) {
+                IntNode temp = (IntNode) first;
+                one = Integer.parseInt(temp.number);
+            }
+        } else if (first instanceof BracketNode) {
+            BracketNode node = (BracketNode) first;
             first = node.interpret();
             if (first instanceof IntNode) {
                 IntNode temp = (IntNode) first;
@@ -69,16 +96,40 @@ class DivNode implements Expression {
                 IntNode temp = (IntNode) second;
                 two = Integer.parseInt(temp.number);
             }
+        } else if (second instanceof BracketNode) {
+            BracketNode node = (BracketNode) second;
+            second = node.interpret();
+            if (second instanceof IntNode) {
+                IntNode temp = (IntNode) second;
+                two = Integer.parseInt(temp.number);
+            }
         }
 
         IntNode res = null;
 
-        try {
-            result = one / two;
-            res = new IntNode(result + "");
-        } catch (ArithmeticException e) {
-            e.printStackTrace();
+        
+        if (two == 0) {
+            System.out.println("MIHU ARE PULA MICA 2");
+                Singleton.getInstance().finishProgram("DivideByZero", line);
+                /*
+                PrintWriter printWriter = null;
+                try {
+                    printWriter = new PrintWriter ("output");
+                    printWriter.print("DivideByZero " + line + "\n");
+                    printWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (printWriter != null)
+                        printWriter.close();
+                }
+            }
+        if (two == 0)
+            System.exit(0);
+            */
         }
+        result = one / two;
+        res = new IntNode(result + "");
 
         return res;
     }

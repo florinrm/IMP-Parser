@@ -1,8 +1,10 @@
 import java.*;
 import java.util.*;
+import java.io.*;
 
 public class PlusNode implements Expression {
     private Expression first_child, second_child;
+    private int line; // for errors or warnings
     public PlusNode (Expression first_child, Expression second_child) {
         this.first_child = first_child;
         this.second_child = second_child;
@@ -10,6 +12,16 @@ public class PlusNode implements Expression {
 
     public PlusNode (Expression child) {
         this(null, child);
+    }
+
+    public PlusNode (Expression first_child, Expression second_child, int line) {
+        this.first_child = first_child;
+        this.second_child = second_child;
+        this.line = line;
+    }
+
+    public PlusNode (Expression child, int line) {
+        this(null, child, line);
     }
 
     public void setFirstChild (Expression first_child) {
@@ -38,12 +50,21 @@ public class PlusNode implements Expression {
     }
 
     public String show() {
+        //String str = line + " <PlusNode> +\n";
         String str = "<PlusNode> +\n";
         if (second_child != null)
             str += Parser.addNewLine(first_child.show() + second_child.show());
         else
             str += Parser.addNewLine(first_child.show());
         return str;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 
     public Expression interpret() {
@@ -54,6 +75,9 @@ public class PlusNode implements Expression {
         if (first instanceof VarNode) {
             VarNode node = (VarNode) first;
             Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
+            if (temp == null) {
+                Singleton.getInstance().finishProgram("UnassignedVar", line);
+            }
             IntNode aux = (IntNode) temp;
             one = Integer.parseInt(aux.number);
             result += one;
@@ -82,6 +106,26 @@ public class PlusNode implements Expression {
         if (second instanceof VarNode) {
             VarNode node = (VarNode) second;
             Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
+            if (temp == null) {
+                System.out.println("MIHU ARE PULA MICA 3");
+                Singleton.getInstance().finishProgram("UnassignedVar", line);
+                /*
+                PrintWriter printWriter = null;
+                try {
+                    printWriter = new PrintWriter ("output");
+                    printWriter.print("UnassignedVar " + line + "\n");
+                    printWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (printWriter != null)
+                        printWriter.close();
+                } */
+            }
+            /*
+            if (temp == null) {
+                System.exit(0);
+            }*/
             IntNode aux = (IntNode) temp;
             two = Integer.parseInt(aux.number);
             result += two;

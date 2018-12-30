@@ -14,15 +14,11 @@ public class Parser {
 	}
 	
 	public static void main (String[] args) throws IOException {
-		//Lexer l = new Lexer(new FileReader("input"));
-		Lexer l = new Lexer(new FileReader(args[0]));
+		Lexer l = new Lexer(new FileReader("input"));
+		//Lexer l = new Lexer(new FileReader(args[0]));
 		l.yylex();
 		Expression expression = null;
 		expression = l.stack.pop();
-
-		for (Map.Entry<String, Expression> entry: Singleton.getInstance().var_values.entrySet()) {
-			System.out.println(entry.getKey() + " " + entry.getValue().show());
-		}
 
 		while (!(l.stack.peek() instanceof MainNode)) {
 			if (l.stack.peek() instanceof SequenceNode) {
@@ -31,23 +27,38 @@ public class Parser {
 				expression = seq;
 			}
 		} 
-
 		l.stack.pop();
 		l.stack.push(new MainNode(expression));
 		Expression ast_tree = l.stack.pop();
 		String tree = ast_tree.show();
-		Expression tree_interpretation = ast_tree.interpret();
-		// String tree_interpretation = l.stack.pop().interpret();
+		Singleton.getInstance().tree = ast_tree;
 
+		System.out.println(tree);
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
             new FileOutputStream("arbore"), "utf-8"))) {
+			System.out.println(tree);
 			writer.write(tree);
+			writer.close();
 		}
-		/*
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream("output"), "utf-8"))) {
-			writer.write(tree_interpretation);
-		} */
 
+
+		Lexer lex = new Lexer(new FileReader("input"));
+		//Lexer lex = new Lexer(new FileReader(args[0]));
+		lex.toIntepret = true;
+		Singleton.count = 0;
+		lex.yylex();
+		expression = lex.stack.pop();
+		while (!(lex.stack.peek() instanceof MainNode)) {
+			if (lex.stack.peek() instanceof SequenceNode) {
+				SequenceNode seq = (SequenceNode) lex.stack.pop();
+				seq.setSecondStatement(expression);
+				expression = seq;
+			}
+		} 
+		lex.stack.pop();
+		lex.stack.push(new MainNode(expression));
+		ast_tree = lex.stack.pop();
+		Singleton.getInstance().tree = ast_tree;
+		ast_tree.interpret();
 	}
 }

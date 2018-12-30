@@ -18,9 +18,9 @@ public class NotNode implements Expression {
         if (node instanceof BoolNode) {
             BoolNode bool = (BoolNode) node;
             if (bool.isTrue())
-                return new BoolNode(BoolNode.trueValue);
-            else
                 return new BoolNode(BoolNode.falseValue);
+            else
+                return new BoolNode(BoolNode.trueValue);
         }
         return null;
     }

@@ -1,6 +1,7 @@
 import java.*;
 import java.util.*;
 
+
 public class IfNode implements Expression {
     private Expression condition, thenBlock, elseBlock;
     public IfNode (Expression condition, Expression thenBlock, Expression elseBlock) {
@@ -47,6 +48,14 @@ public class IfNode implements Expression {
     }
 
     public Expression interpret() {
+        Expression result = condition.interpret();
+        if (result instanceof BoolNode) {
+            BoolNode bool = (BoolNode) result;
+            if (bool.isTrue())
+                return thenBlock.interpret();
+            else
+                return elseBlock.interpret();
+        }
         return null;
     }
 }

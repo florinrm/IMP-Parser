@@ -3,6 +3,7 @@ import java.util.*;
 
 public class BoolNode implements Expression {
     private String value;
+    private int line; // for errors or warnings
 
     public final static String trueValue = "true";
     public final static String falseValue = "false";
@@ -33,5 +34,13 @@ public class BoolNode implements Expression {
 
     public void setValue (String value) {
         this.value = value;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }

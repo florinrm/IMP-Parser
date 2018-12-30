@@ -3,6 +3,7 @@ import java.util.*;
 
 public class BracketNode implements Expression {
     private Expression child;
+    private int line; // for errors or warnings
 
     public BracketNode (Expression child) {
         this.child = child;
@@ -27,7 +28,17 @@ public class BracketNode implements Expression {
         return str;
     }    
 
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
     public Expression interpret() {
+        if (child != null)
+            return child.interpret();
         return null;
     }
 }

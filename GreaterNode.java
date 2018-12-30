@@ -1,6 +1,7 @@
 import java.*;
 import java.util.*;
 
+
 public class GreaterNode implements Expression {
     private Expression first_child, second_child;
     public GreaterNode (Expression first_child, Expression second_child) {
@@ -31,10 +32,18 @@ public class GreaterNode implements Expression {
     }   
     
     public Expression interpret() {
-        IntNode first = (IntNode) first_child;
-        IntNode second = (IntNode) second_child;
-        if (first.number.compareTo(second.number) > 0)
-            return new BoolNode("True");
-        return new BoolNode("False");
+        Expression first_interpret = first_child.interpret();
+        Expression second_interpret = second_child.interpret();
+
+        if (first_interpret instanceof IntNode && second_interpret instanceof IntNode) {
+            IntNode first = (IntNode) first_interpret;
+            IntNode second = (IntNode) second_interpret;
+            int one = Integer.parseInt(first.number);
+            int two = Integer.parseInt(second.number);
+            if (one > two)
+                return new BoolNode(BoolNode.trueValue);
+            return new BoolNode(BoolNode.falseValue);
+        }
+        return null;
     }
 }
