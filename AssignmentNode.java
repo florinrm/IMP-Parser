@@ -17,6 +17,14 @@ public class AssignmentNode implements Expression {
 
     public String show() {
         String str = "<AssignmentNode> =\n";
+        if (expression instanceof PlusNode) {
+            PlusNode node = (PlusNode) expression;
+            if (node.hasUndeclared()) {
+                Singleton.getInstance().undeclared_line = line;
+                Singleton.getInstance().error_message = "UnassignedVar";
+                Singleton.getInstance().undeclared_var = true;
+            }
+        }
         str += Parser.addNewLine(var.show() + expression.show());
         return str;
     }
@@ -43,6 +51,8 @@ public class AssignmentNode implements Expression {
             //System.out.println(expression.show());
             Expression temp = expression.interpret();
             //if (temp != null) {
+                System.out.println(temp.show());
+                System.out.println("costi gay " + node.getVarName());
                 if (temp instanceof IntNode) {
                     IntNode aux = (IntNode) temp;
                     Singleton.getInstance().var_values.put(node.getVarName(), aux.interpret());
@@ -50,7 +60,7 @@ public class AssignmentNode implements Expression {
                     BoolNode aux = (BoolNode) temp;
                     Singleton.getInstance().var_values.put(node.getVarName(), aux.interpret());
                 } else {
-                    System.out.println(temp.getClass());
+                    //System.out.println(temp.getClass());
                     Singleton.getInstance().var_values.put(node.getVarName(), temp.interpret());
                 }
             //}

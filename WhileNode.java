@@ -35,7 +35,7 @@ public class WhileNode implements Expression {
             
             // conditia din paranteza
             Expression aux = temp.getChild();
-            System.out.println(aux.show()); 
+            //System.out.println(aux.show()); 
             Expression eval = aux.interpret();
             if (eval instanceof BoolNode) {
                 BoolNode node = (BoolNode) eval;

@@ -74,12 +74,14 @@ public class PlusNode implements Expression {
 
         if (first instanceof VarNode) {
             VarNode node = (VarNode) first;
+            System.out.println(node.getVarName());
             Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
             if (temp == null) {
                 Singleton.getInstance().finishProgram("UnassignedVar", line);
             }
             IntNode aux = (IntNode) temp;
             one = Integer.parseInt(aux.number);
+            System.out.println(one);
             result += one;
         } else if (first instanceof IntNode) {
             IntNode aux = (IntNode) first;
@@ -105,6 +107,7 @@ public class PlusNode implements Expression {
 
         if (second instanceof VarNode) {
             VarNode node = (VarNode) second;
+            System.out.println(node.getVarName());
             Expression temp = Singleton.getInstance().var_values.get(node.getVarName());
             if (temp == null) {
                 System.out.println("MIHU ARE PULA MICA 3");
@@ -128,6 +131,7 @@ public class PlusNode implements Expression {
             }*/
             IntNode aux = (IntNode) temp;
             two = Integer.parseInt(aux.number);
+            System.out.println(two);
             result += two;
         } else if (second instanceof IntNode) {
             IntNode aux = (IntNode) second;
@@ -151,6 +155,21 @@ public class PlusNode implements Expression {
             }
         }
         String res = result + "";
+        System.out.println("result " + res);
         return new IntNode(res);
+    }
+
+    public boolean hasUndeclared() {
+        if (first_child instanceof VarNode) {
+            VarNode node = (VarNode) first_child;
+            if (!Singleton.getInstance().declared_variables.contains(node.getVarName()))
+                return true;
+        }
+        if (second_child instanceof VarNode) {
+            VarNode node = (VarNode) second_child;
+            if (!Singleton.getInstance().declared_variables.contains(node.getVarName()))
+                return true;
+        }
+        return false;
     }
 }

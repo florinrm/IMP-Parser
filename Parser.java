@@ -16,6 +16,7 @@ public class Parser {
 	public static void main (String[] args) throws IOException {
 		Lexer l = new Lexer(new FileReader("input"));
 		//Lexer l = new Lexer(new FileReader(args[0]));
+		l.toIntepret = false;
 		l.yylex();
 		Expression expression = null;
 		expression = l.stack.pop();
@@ -33,20 +34,23 @@ public class Parser {
 		String tree = ast_tree.show();
 		Singleton.getInstance().tree = ast_tree;
 
-		System.out.println(tree);
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
             new FileOutputStream("arbore"), "utf-8"))) {
-			System.out.println(tree);
+			//System.out.println(tree);
 			writer.write(tree);
 			writer.close();
 		}
 
+		if (Singleton.getInstance().undeclared_var) {
+			Singleton.getInstance().finishProgram(Singleton.getInstance().error_message, Singleton.getInstance().undeclared_line);
+		}
 
 		Lexer lex = new Lexer(new FileReader("input"));
+		
 		//Lexer lex = new Lexer(new FileReader(args[0]));
 		lex.toIntepret = true;
-		Singleton.count = 0;
-		lex.yylex();
+		Singleton.count = 1;
+		lex.yylex(); /*
 		expression = lex.stack.pop();
 		while (!(lex.stack.peek() instanceof MainNode)) {
 			if (lex.stack.peek() instanceof SequenceNode) {
@@ -58,7 +62,7 @@ public class Parser {
 		lex.stack.pop();
 		lex.stack.push(new MainNode(expression));
 		ast_tree = lex.stack.pop();
-		Singleton.getInstance().tree = ast_tree;
+		Singleton.getInstance().tree = ast_tree; */
 		ast_tree.interpret();
 	}
 }

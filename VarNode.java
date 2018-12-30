@@ -35,6 +35,9 @@ public class VarNode implements Expression {
 
     public String show() {
         //return line + " <VariableNode> " + string + "\n"; 
+        if (!Singleton.getInstance().declared_variables.contains(string)) {
+            Singleton.getInstance().undeclared_var = true;            
+        }
         return "<VariableNode> " + string + "\n"; 
     }
 

@@ -5,7 +5,13 @@ import java.io.*;
 public class Singleton {
     private static Singleton value = null;
     public HashMap<String, Expression> var_values = new HashMap<>();
-    public static int count = 0;
+    public HashSet<String> declared_variables = new HashSet<>();
+    public static int count = 1;
+
+    public boolean undeclared_var = false;
+    public int undeclared_line = 0;
+    public String error_message = "";
+
     public Expression tree;
     private Singleton () {
         // MUIE PSD

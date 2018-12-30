@@ -47,9 +47,9 @@ import java.util.*;
 						if (expr instanceof VarNode) {
 							VarNode muie_viorica = (VarNode) expr;
 							muie_viorica.setLine(Singleton.count);
-							expr = new AssignmentNode(muie_dragnea, muie_viorica);
+							expr = new AssignmentNode(muie_dragnea, muie_viorica, Singleton.count);
 						} else {
-							expr = new AssignmentNode(muie_dragnea, expr);
+							expr = new AssignmentNode(muie_dragnea, expr, Singleton.count);
 						}
 						
 						//System.out.println("Muia\n" + stack.peek().show() + "\n" + expr.show());
@@ -61,13 +61,14 @@ import java.util.*;
 						if (toIntepret) {
 							if (variable instanceof VarNode) {
 								VarNode temp = (VarNode) variable;
+								System.out.println("Var name " + temp.getVarName());
 								if (value instanceof VarNode) {
 									VarNode aux = (VarNode) value;
 									Singleton.getInstance().var_values.put(temp.getVarName(), Singleton.getInstance().var_values.get(aux.getVarName()));
 								} else if (value instanceof IntNode || value instanceof BoolNode) {
 									Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
 								} else if (value instanceof PlusNode || value instanceof DivNode) {
-									Singleton.getInstance().var_values.put(temp.getVarName(), value.interpret());
+									//Singleton.getInstance().var_values.put(temp.getVarName(), value);
 								}
 							}
 						}
@@ -146,8 +147,11 @@ not = "!"
             Symbol symbol_stack = (Symbol) stack.peek();
             if (symbol_stack.getSymbol().compareTo(mainNode) == 0) {
 				VarNode node = new VarNode(yytext());
+				//System.out.println("declare " + node.getVarName());
 				if (toIntepret)
 					Singleton.getInstance().var_values.put(node.getVarName(), null);
+				else
+					Singleton.getInstance().declared_variables.add(node.getVarName());
             } else if (symbol_stack.getSymbol().compareTo(divSign) != 0) {
 				stack.push(new VarNode(yytext()));
             } else {

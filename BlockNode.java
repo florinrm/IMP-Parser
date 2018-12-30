@@ -20,11 +20,8 @@ public class BlockNode implements Expression {
 
     public Expression interpret() {
         if (statement != null) {
-            System.out.println("SEXY VLAD VAIDA");
             return statement.interpret();
         }
-        else
-            System.out.println("STATEMENT NULL");
         return null;
     }
 }
