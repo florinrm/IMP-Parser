@@ -3,15 +3,10 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-import java.io.IOException;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        if (args.length == 0) {
-            System.err.println("No file given");
-            return;
-        }
-
         HelloLexer lexer = null;
         CommonTokenStream tokenStream = null;
         HelloParser parser = null;
@@ -21,7 +16,7 @@ public class Main {
         boolean lexicalSyntaxErrors = false;
 
         // Deschidem fisierul input pentru a incepe parsarea
-        String fileName = args[0];
+        String fileName = "input";
         CharStream input = CharStreams.fromFileName(fileName);
 
         // Definim Lexer-ul
@@ -39,5 +34,11 @@ public class Main {
         // Vizitam AST-ul
         MyVisitor visitor = new MyVisitor();
         visitor.visit(tree);
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream("arbore"), "utf-8"))) {
+			//System.out.println(tree);
+			writer.write(visitor.res);
+			writer.close();
+		}
     }
 }

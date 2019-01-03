@@ -2,105 +2,29 @@ import java.lang.Integer;
 
 class MyVisitor extends HelloBaseVisitor<Integer> {
     private int tabs = 0;
+    public String res = "";
 
     // Functie rudimentara pentru a printa tab-uri
     private void printTabs() {
         for (int i = 0; i < this.tabs; i++) {
-            System.out.print("\t");
+            //System.out.print("\t");
+            res += "\t";
         }
     }
-
-    /*
-	@Override public Integer visitMain(HelloParser.MainContext ctx) {
-        this.printTabs();
-        System.out.println("<MainNode>");
-
-        this.tabs++;
-        visit(ctx.list());
-        this.tabs--;
-
-        return 0;
-    }
-
-	@Override public Integer visitList(HelloParser.ListContext ctx) {
-        // Daca lista este un Cons sau un Concat, trecem direct in acel context
-        if (ctx.cons() != null) {
-            visit(ctx.cons());
-        }
-        else if (ctx.concat() != null) {
-            visit(ctx.concat());
-        } else {
-            // Avem o lista simpla, printam normal
-            this.printTabs();
-            System.out.println("<List> ()");
-
-            this.tabs++;
-            if (ctx.sequence() != null) {
-                visit(ctx.sequence());
-            }
-            this.tabs--;
-        }
-
-        return 0;
-    }
-
-	@Override public Integer visitSequence(HelloParser.SequenceContext ctx) {
-        this.printTabs();
-        System.out.println("<Seqeunce>");
-
-        this.tabs++;
-        visit(ctx.element());
-        if (ctx.sequence() != null) {
-            visit(ctx.sequence());
-        }
-        this.tabs--;
-
-        return 0;
-    }
-
-	@Override public Integer visitElement(HelloParser.ElementContext ctx) {
-        visit(ctx.getChild(0));
-
-        return 0;
-    }
-
-	@Override public Integer visitCons(HelloParser.ConsContext ctx) {
-        this.printTabs();
-        System.out.println("<Cons> :");
-
-        this.tabs++;
-        visit(ctx.integer());
-        visit(ctx.list());
-        this.tabs--;
-
-        return 0;
-    }
-
-	@Override public Integer visitConcat(HelloParser.ConcatContext ctx) {
-        this.printTabs();
-        System.out.println("<Concat> ++");
-
-        this.tabs++;
-        visit(ctx.list(0));
-        visit(ctx.list(1));
-        this.tabs--;
-
-        return 0;
-    }*/
 
     @Override 
     public Integer visitInteger(HelloParser.IntegerContext ctx) {
         //this.printTabs();
-        System.out.println("<IntNode> " + ctx.getText());
-
+        //System.out.println("<IntNode> " + ctx.getText());
+        res += "<IntNode> " + ctx.getText() + "\n";
         return 0;
     }
 
     @Override
     public Integer visitMain (HelloParser.MainContext ctx) {
         this.printTabs();
-        System.out.println("<MainNode>");
-
+        //System.out.println("<MainNode>");
+        res += "<MainNode>\n";
         this.tabs++;
         visit(ctx.variablesList());
         visit(ctx.sequence());
@@ -117,7 +41,8 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
 
     @Override
     public Integer visitIf_stmt (HelloParser.If_stmtContext ctx) {
-        System.out.println("<IfNode> if");
+        //System.out.println("<IfNode> if");
+        res += "<IfNode> if\n";
         visit(ctx.STAT_IF());
         if (ctx.b_expression() != null)
             visit(ctx.b_expression());
@@ -132,7 +57,8 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
 
     @Override
     public Integer visitWhile_stmt (HelloParser.While_stmtContext ctx) {
-        System.out.println("<WhileNode> while");
+        //System.out.println("<WhileNode> while");
+        res += "<WhileNode> while\n";
         visit(ctx.STAT_WHILE());
         if (ctx.b_expression() != null)
             visit(ctx.b_expression());
@@ -200,7 +126,8 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
 
     public Integer visitSequence (HelloParser.SequenceContext ctx) {
         printTabs();
-        System.out.println("<SequenceNode>");
+        //System.out.println("<SequenceNode>");
+        res += "<SequenceNode>\n";
         this.tabs++;
         if (ctx.statement(0) != null)
             visit(ctx.statement(0));
@@ -225,7 +152,8 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
             --this.tabs;
         } else if (ctx.assign() != null) {
             ++this.tabs;
-            System.out.println("<AssignmentNode> =");
+            //System.out.println("<AssignmentNode> =");
+            res += "<AssignmentNode> =\n";
             visit(ctx.assign());
             --this.tabs;
         }
@@ -236,14 +164,16 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
     public Integer visitVariable (HelloParser.VariableContext ctx) {
         //--this.tabs;
         //printTabs();
-        System.out.println("<VariableNode> " + ctx.getText());
+        //System.out.println("<VariableNode> " + ctx.getText());
+        res += "<VariableNode> " + ctx.getText() + "\n";
         //++this.tabs;
         return 0;
     }
 
     @Override
     public Integer visitPlus (HelloParser.PlusContext ctx) {
-        System.out.println("<PlusNode> +");
+        //System.out.println("<PlusNode> +");
+        res += "<PlusNode> +\n";
         return 0;
     }
 
@@ -266,35 +196,41 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
 
     @Override
     public Integer visitDiv (HelloParser.DivContext ctx) {
-        System.out.println("<DivNode> /");
+        //System.out.println("<DivNode> /");
+        res += "<DivNode> /\n";
         return 0;
     }
 
     @Override
     public Integer visitNot (HelloParser.NotContext ctx) {
-        System.out.println("<NotNode> !");
+        //System.out.println("<NotNode> !");
+        res += "<NotNode> !\n";
         return 0;
     }
 
     @Override
     public Integer visitGreater (HelloParser.GreaterContext ctx) {
-        System.out.println("<GreaterNode> >");
+        //System.out.println("<GreaterNode> >");
+        res += "<GreaterNode> >\n";
         return 0;
     }
 
     @Override
     public Integer visitAnd (HelloParser.AndContext ctx) {
-        System.out.println("<AndNode> &&");
+        //System.out.println("<AndNode> &&");
+        res += "<AndNode> &&\n";
         return 0;
     }
 
     public Integer visitBool (HelloParser.BoolContext ctx) {
-        System.out.println("<BoolNode> " + ctx.getText());
+        //System.out.println("<BoolNode> " + ctx.getText());
+        res += "<BoolNode> " + ctx.getText() + "\n";
         return 0;
     }
 
     public Integer visitBracket (HelloParser.BracketContext ctx) {
-        System.out.println("<BracketNode> ()");
+        //System.out.println("<BracketNode> ()");
+        res += "<BracketNode> ()\n";
         visit(ctx.OPEN_PAR());
         if (ctx.a_expression() != null) {
             visit(ctx.a_expression());
@@ -308,7 +244,8 @@ class MyVisitor extends HelloBaseVisitor<Integer> {
     public Integer visitBlock (HelloParser.BlockContext ctx) {      
         printTabs();
         ++this.tabs;  
-        System.out.println("<BlockNode> {}");
+        //System.out.println("<BlockNode> {}");
+        res += "<BlockNode> {}\n";
         visit(ctx.OPEN_BRACKET());
         if (ctx.sequence() != null) {
             visit(ctx.sequence());

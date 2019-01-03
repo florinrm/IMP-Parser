@@ -1,20 +1,6 @@
 // Define a grammar called Hello
 grammar Hello;
 /* Definim regulile gramaticii (cu litere mici) */
-/*
-main  : list ;  // Inceputul gramaticii, S -> list
-list: '()' | '(' sequence ')' | cons | concat;
-sequence : element | element ' ' sequence;
-element
-    :   integer
-    |   cons
-    |   concat
-    |   list
-    ;
-cons : '(: ' integer ' ' list ')';
-concat : '(++ ' left=list ' ' right=list ')';
-integer : INTEGER;
-*/
 
 main : variablesList CLOSE_INSTR sequence ;
 variablesList : TYPE (VAR IGNORE_EXPR)* VAR ;
