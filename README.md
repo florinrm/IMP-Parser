@@ -61,6 +61,12 @@ while (!(i > 7)) {
 								<IntNode> 1
 
 ```
+### Types of nodes from AST
+- `MainNode` - the root node of the AST and it has one child
+- `IntNode` - a numerical value and it's a leaf node
+- `BoolNode` - a boolean value and it's a leaf node
+- `VarNode` - a string value, representing the name of a variable and it's a leaf node
+
 
 ## JFlex parser and interpreter
 
