@@ -18,7 +18,7 @@ while (!(i > 7)) {
 }
 ```
 - the AST build by the parser
-```
+```xml
 <MainNode>
 	<SequenceNode>
 		<AssignmentNode> =
