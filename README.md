@@ -66,7 +66,17 @@ while (!(i > 7)) {
 - `IntNode` - a numerical value and it's a leaf node
 - `BoolNode` - a boolean value and it's a leaf node
 - `VarNode` - a string value, representing the name of a variable and it's a leaf node
-
+- `PlusNode`
+- `DivNode`
+- `BracketNode`
+- `AndNode`
+- `GreaterNode`
+- `NotNode`
+- `IfNode`
+- `WhileNode`
+- `AssignmentNode`
+- `BlockNode`
+- `SequenceNode`
 
 ## JFlex parser and interpreter
 
