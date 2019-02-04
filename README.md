@@ -1,4 +1,4 @@
-# IMP Language Parser
+# IMP Language Lexical Analyzer
 Project composed of two parts, both written using Java:
 1. Parser and interpreter in JFlex
 2. Parser in ANTLR
